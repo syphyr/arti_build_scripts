@@ -1,7 +1,7 @@
 ./get
 
 if [ ! -d termux-elf-cleaner ]; then
-   git clone https://github.com/syphyr/termux-elf-cleaner
+   git clone https://github.com/termux/termux-elf-cleaner
 fi
 
 cd termux-elf-cleaner
