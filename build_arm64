@@ -1,0 +1,18 @@
+export ANDROID_NDK_HOME=$ANDROID_HOME/ndk/29.0.14206865
+export ANDROID_NDK_ROOT=$ANDROID_NDK_HOME
+
+export PKG_CONFIG_PATH="$(pwd)/build_libs/lib/pkgconfig"
+
+export OPENSSL_DIR="$(pwd)/build_libs"
+export OPENSSL_LIB_DIR="$(pwd)/build_libs/lib"
+export OPENSSL_INCLUDE_DIR="$(pwd)/build_libs/include"
+
+export SQLITE3_LIB_DIR="$(pwd)/build_libs/lib"
+export SQLITE3_INCLUDE_DIR="$(pwd)/build_libs/include"
+
+make -f build-tools
+make -f build-libs
+
+cd arti
+
+cargo ndk --platform 24 --target aarch64-linux-android build --release --locked -p arti --features=static,full

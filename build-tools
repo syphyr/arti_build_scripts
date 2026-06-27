@@ -1,0 +1,29 @@
+EXTERNAL_ROOT := $(shell pwd)
+
+MAKE ?= make -j`nproc`
+
+.PHONY = elf-cleaner-clean
+
+all: elf-cleaner
+
+#------------------------------------------------------------------------------#
+# elf-cleaner
+
+elf-cleaner/Makefile:
+	cd termux-elf-cleaner && autoreconf --install && \
+	        ./configure --prefix=/
+
+elf-cleaner-build-stamp: elf-cleaner/Makefile
+	$(MAKE) -C termux-elf-cleaner install DESTDIR=$(EXTERNAL_ROOT)
+	touch $@
+
+elf-cleaner-clean:
+	-rm -f bin/termux-elf-cleaner
+	-rm -f elf-cleaner-build-stamp
+	-cd termux-elf-cleaner && \
+                git clean -fdx && \
+                git reset --hard 
+
+elf-cleaner: elf-cleaner-build-stamp
+
+clean: elf-cleaner-clean

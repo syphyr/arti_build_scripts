@@ -1,0 +1,34 @@
+./get
+
+if [ ! -d termux-elf-cleaner ]; then
+   git clone https://github.com/syphyr/termux-elf-cleaner
+fi
+
+cd termux-elf-cleaner
+git checkout master
+git fetch
+git rebase
+git log --pretty="%C(yellow)%h %C(green)(%cr) %C(red)(%ar) %C(white)%s %C(blue)(%an)" -10 origin/master
+cd ..
+
+if [ ! -d openssl ]; then
+   git clone https://github.com/openssl/openssl.git
+fi
+
+cd openssl
+git checkout openssl-3.5
+git fetch
+git rebase
+git submodule update --init --recursive
+git log --pretty="%C(yellow)%h %C(green)(%cr) %C(red)(%ar) %C(white)%s %C(blue)(%an)" -10 origin/openssl-3.5
+cd ..
+
+if [ ! -d sqlite ]; then
+   git clone https://github.com/sqlite/sqlite
+fi
+
+cd sqlite
+git checkout master
+git fetch
+git rebase
+git log --pretty="%C(yellow)%h %C(green)(%cr) %C(red)(%ar) %C(white)%s %C(blue)(%an)" -10 origin/master

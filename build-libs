@@ -1,0 +1,121 @@
+# Please install the following prerequisites (instructions for each follows):
+# 	Android OS SDK: http://source.android.com/download
+#
+# Install and prepare the Android OS SDK ( http://source.android.com/download )
+# on Debian or Ubuntu
+
+EXTERNAL_ROOT := $(shell pwd)
+
+DEBUG ?= 0
+
+HOST := aarch64-linux-android
+NDK_ABI := arm64
+
+NDK_PLATFORM_LEVEL := 24
+
+NDK_UNAME := $(shell uname -s | tr '[A-Z]' '[a-z]')
+MAKE ?= make -j`nproc`
+
+CPU := $(shell uname -m)
+ifeq ($(CPU),x86_64)
+ NDK_PROCESSOR=x86_64
+else
+ NDK_PROCESSOR=x86
+endif
+
+NDK_TOOLCHAIN_BASE=$(ANDROID_NDK_HOME)/toolchains/llvm/prebuilt/$(NDK_UNAME)-$(NDK_PROCESSOR)
+
+export CC := $(NDK_TOOLCHAIN_BASE)/bin/$(HOST)$(NDK_PLATFORM_LEVEL)-clang
+export AR := $(NDK_TOOLCHAIN_BASE)/bin/llvm-ar
+export LD := $(NDK_TOOLCHAIN_BASE)/bin/ld
+export RANLIB := $(NDK_TOOLCHAIN_BASE)/bin/llvm-ranlib
+export STRIP := $(NDK_TOOLCHAIN_BASE)/bin/llvm-strip
+
+.PHONY = clean openssl-clean sqlite-clean build-clean
+
+all: openssl-build-stamp sqlite-build-stamp
+
+#------------------------------------------------------------------------------#
+# openssl
+#
+# not all of openssl is needed, only the parts that Tor needs
+# https://trac.torproject.org/projects/tor/ticket/32200
+# https://gitweb.torproject.org/tor.git/tree/src/lib/tls/ciphers.inc
+# https://wiki.openssl.org/index.php/Compilation_and_Installation
+
+PATH := $(ANDROID_NDK_HOME)/toolchains/llvm/prebuilt/$(NDK_UNAME)-$(NDK_PROCESSOR)/bin:$(PATH)
+
+# openssl3.0.x looks for NDK with the word root instead of home in the var name
+export ANDROID_NDK_ROOT=$(ANDROID_NDK_HOME)
+
+openssl/Makefile: openssl/Configure $(wildcard openssl/Configurations/*.*)
+	cd openssl && PATH=$(PATH) \
+		./Configure \
+			no-shared no-ssl3 no-tls1 no-tls1_1 \
+			no-ocsp no-nextprotoneg no-psk no-srp no-ts \
+			no-cmp no-cms no-ct no-dgram no-dtls no-http \
+			no-quic no-srtp no-argon2 no-aria no-bf \
+			no-blake2 no-camellia no-cast no-des no-dsa \
+			no-gost no-idea no-integrity-only-ciphers no-md2 \
+			no-md4 no-mdc2 no-ml-dsa no-ocb no-rc2 no-rc4 \
+			no-rc5 no-rmd160 no-scrypt no-seed no-siphash \
+			no-slh-dsa no-sm2 no-sm3 no-sm4 no-whirlpool \
+			no-ec2m no-ssl-trace no-tls-deprecated-ec \
+			no-siv no-tests no-padlockeng no-ui-console \
+			no-apps no-async no-comp no-ktls no-legacy no-zlib \
+			android-$(NDK_ABI) \
+			-D__ANDROID_API__=$(NDK_PLATFORM_LEVEL) \
+			--prefix=/build_libs \
+			--openssldir=/
+
+openssl-build-stamp: openssl/Makefile
+	PATH=$(PATH) make -j`nproc` -C openssl install_dev DESTDIR=$(EXTERNAL_ROOT)
+	touch $@
+
+openssl-clean:
+	-rm -f openssl-build-stamp
+	-cd openssl && \
+		git clean -fdx && \
+		git reset --hard && \
+		git submodule foreach --recursive git clean -fdx && \
+		git submodule foreach --recursive git reset --hard
+
+#------------------------------------------------------------------------------#
+
+sqlite/Makefile:
+	cd sqlite && PATH=$(PATH) \
+		./configure \
+		--host=aarch64-linux-android \
+		--enable-static \
+		--disable-shared \
+		--disable-amalgamation \
+		--disable-load-extension \
+		--disable-tcl \
+		--prefix=/build_libs \
+		CFLAGS="-O3 -march=armv8-a \
+			-flto -fPIC \
+			-DANDROID \
+			-D__ANDROID_API__=$(NDK_PLATFORM_LEVEL) \
+			-DSQLITE_ENABLE_JSON1 \
+			-DSQLITE_ENABLE_FTS5 \
+			-DSQLITE_ENABLE_RTREE \
+			-DSQLITE_ENABLE_DBSTAT_VTAB" \
+		LDFLAGS="-static -flto -L$(NDK_TOOLCHAIN_BASE)/sysroot/usr/lib/aarch64-linux-android/"
+
+sqlite-build-stamp: sqlite/Makefile
+	PATH=$(PATH) make -j`nproc` -C sqlite install DESTDIR=$(EXTERNAL_ROOT)
+	touch $@
+
+sqlite-clean:
+	-rm -f sqlite-build-stamp
+	-cd sqlite && \
+		git clean -fdx && \
+		git reset --hard
+
+#------------------------------------------------------------------------------#
+
+build-clean:
+	-rm -rf build_libs
+
+clean: openssl-clean sqlite-clean build-clean
+

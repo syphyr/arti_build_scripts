@@ -1,0 +1,13 @@
+if [ ! -d arm64 ]; then
+	mkdir arm64
+	echo "arm64 bin directory created"
+fi
+
+cp -av arti/target/aarch64-linux-android/release/arti arm64/
+cp -av arti/crates/arti/src/arti-example-config.toml arm64/arti.toml
+
+./bin/termux-elf-cleaner --api-level 24 arm64/arti
+
+sed -ri 's/^#state_dir.+/state_dir = "\~\/arti\/data"/' arm64/arti.toml
+sed -ri 's/^#cache_dir.+/cache_dir = "\~\/arti\/cache"/' arm64/arti.toml
+sed -ri 's/^#socks_listen.+/socks_listen = 9050/' arm64/arti.toml

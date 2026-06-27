@@ -1,0 +1,11 @@
+/*.deb
+/*.buildinfo
+/*.changes
+/*.ddeb
+/bin
+/arti
+/openssl
+/sqlite
+/termux-elf-cleaner
+/arm64/arti
+/arm64/arti.toml

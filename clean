@@ -1,0 +1,4 @@
+cd arti
+git clean -fdx
+git reset --hard
+git describe --tags --always
