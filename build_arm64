@@ -1,3 +1,19 @@
+if ! command -v rustup >/dev/null 2>&1; then
+  echo "Error: rustup is not installed. Please install before running this script."
+  echo ""
+  echo "To install rust if needed:"
+  echo "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh"
+  exit 1
+fi
+
+echo ""
+echo "Adding android native arm64 target for rust"
+rustup target add aarch64-linux-android
+
+echo ""
+echo "Installing/updating cargo-ndk"
+cargo install cargo-ndk
+
 export ANDROID_NDK_HOME=$ANDROID_HOME/ndk/29.0.14206865
 export ANDROID_NDK_ROOT=$ANDROID_NDK_HOME
 
