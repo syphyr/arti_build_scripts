@@ -1,0 +1,105 @@
+From b55511c4672984063dc11d511e8f3ce9d53efa9d Mon Sep 17 00:00:00 2001
+From: syphyr <syphyr@gmail.com>
+Date: Thu, 10 Apr 2025 20:32:42 +0200
+Subject: [PATCH] debian: Auto generate changelog
+
+---
+ .gitignore                            |  1 +
+ build-debian.sh                       |  2 ++
+ debian/changelog                      |  5 -----
+ debian/changelog.TEMPLATE             |  5 +++++
+ debian/rules                          |  5 ++++-
+ debian/scripts/debian-update-versions | 23 +++++++++++++++++++++++
+ 6 files changed, 35 insertions(+), 6 deletions(-)
+ create mode 100755 build-debian.sh
+ delete mode 100644 debian/changelog
+ create mode 100644 debian/changelog.TEMPLATE
+ create mode 100755 debian/scripts/debian-update-versions
+
+diff --git a/.gitignore b/.gitignore
+index 2862087ce..d3f42513d 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -21,3 +21,4 @@
+ /osxcross
+ /.arti_rpc_test
+ /tmp
++debian/changelog
+diff --git a/build-debian.sh b/build-debian.sh
+new file mode 100755
+index 000000000..c1a17bf00
+--- /dev/null
++++ b/build-debian.sh
+@@ -0,0 +1,2 @@
++debian/scripts/debian-update-versions
++dpkg-buildpackage -uc -us -b -tc -j4 --build-profiles=release,nocheck,full
+diff --git a/debian/changelog b/debian/changelog
+deleted file mode 100644
+index b1fa0d7fb..000000000
+--- a/debian/changelog
++++ /dev/null
+@@ -1,5 +0,0 @@
+-arti (1.2.6-1tpo1) UNRELEASED; urgency=low
+-
+-  * Initial release.
+-
+- -- NoisyCoil <noisycoil@tutanota.com>  Thu, 08 Aug 2024 12:47:56 +0200
+diff --git a/debian/changelog.TEMPLATE b/debian/changelog.TEMPLATE
+new file mode 100644
+index 000000000..342e46c7a
+--- /dev/null
++++ b/debian/changelog.TEMPLATE
+@@ -0,0 +1,5 @@
++arti (1:1.0noversion) UNRELEASED; urgency=low
++
++  * upstream
++
++ -- NoisyCoil <noisycoil@tutanota.com>
+diff --git a/debian/rules b/debian/rules
+index fc90aab76..11b86304a 100755
+--- a/debian/rules
++++ b/debian/rules
+@@ -73,7 +73,10 @@ override_dh_auto_clean:
+ 	dh_auto_clean
+ 	rm -rf $(CURDIR)/target $(CARGO_HOME) $(CARGO_TARGET_DIR) debian/arti.toml
+ 
+-override_dh_auto_configure:
++changelog_build:
++	debian/scripts/debian-update-versions
++
++override_dh_auto_configure: changelog_build
+ 	install -D -m 0644 $(CURDIR)/debian/config.toml $(CARGO_HOME)/config.toml
+ ifeq ($(CROSS_BUILD),1)
+ 	printf "\n[target.$(DEB_HOST_RUST_TYPE)]\n" >> $(CARGO_HOME)/config.toml
+diff --git a/debian/scripts/debian-update-versions b/debian/scripts/debian-update-versions
+new file mode 100755
+index 000000000..b47aa35cf
+--- /dev/null
++++ b/debian/scripts/debian-update-versions
+@@ -0,0 +1,23 @@
++#!/bin/sh
++
++set -e
++
++get_version()
++{
++    (
++        VERSION=1:$(git describe --tags --always | sed -e 's/^[^0-9]*//' -e 's/\^0$//')
++        if [ "$VERSION" = "1:" ]; then
++            TIMESTAMP=$(git log -1 --date=short --format=%cd | sed 's/-/./g')
++            COMMIT=$(git rev-parse --short HEAD)
++            VERSION="2:${TIMESTAMP}.${COMMIT}"
++        fi
++        echo "${VERSION}"
++    )
++}
++
++do_subst() {
++    sed  -e "0,/^arti (.*)/s/(.*)/($1)/" \
++         -e "s/\(^ -- NoisyCoil <noisycoil@tutanota.com>\).*/\1  $(date -R)/" debian/changelog.TEMPLATE > debian/changelog
++}
++
++do_subst "$(get_version)"
+-- 
+2.34.1
+
