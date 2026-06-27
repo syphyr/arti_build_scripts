@@ -9,3 +9,7 @@
 /termux-elf-cleaner
 /arm64/arti
 /arm64/arti.toml
+/build_libs
+/elf-cleaner-build-stamp
+/openssl-build-stamp
+/sqlite-build-stamp
