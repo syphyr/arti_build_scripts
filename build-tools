@@ -1,7 +1,5 @@
 EXTERNAL_ROOT := $(shell pwd)
 
-MAKE ?= make -j`nproc`
-
 .PHONY = elf-cleaner-clean
 
 all: elf-cleaner
@@ -10,11 +8,11 @@ all: elf-cleaner
 # elf-cleaner
 
 elf-cleaner/Makefile:
-	cd termux-elf-cleaner && autoreconf --install && \
-	        ./configure --prefix=/
+	cd termux-elf-cleaner && \
+	cmake -B build -G Ninja -DCMAKE_INSTALL_PREFIX=$(EXTERNAL_ROOT)
 
 elf-cleaner-build-stamp: elf-cleaner/Makefile
-	$(MAKE) -C termux-elf-cleaner install DESTDIR=$(EXTERNAL_ROOT)
+	ninja install -C termux-elf-cleaner/build
 	touch $@
 
 elf-cleaner-clean:
