@@ -1,5 +1,10 @@
+if ! command -v rustup >/dev/null 2>&1; then
+  echo "Error: rustup is not installed. Please install before running this script."
+  echo ""
+  echo "To install rust if needed:"
+  echo "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh"
+  exit 1
+fi
+
 cd arti
 ./build-debian.sh
-#debian/scripts/debian-update-versions
-#dpkg-buildpackage -uc -us -b -tc -j4 --build-profiles=release,nocheck,full
-##dpkg-buildpackage -uc -us -b -tc -j4 --build-profiles=release,full
