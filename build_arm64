@@ -36,7 +36,7 @@ python3 -m pip install --user tools/ninja-1.11.1.1-py2.py3-none-manylinux1_x86_6
 python3 -m pip install --user tools/cmake-3.26.4-py2.py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl
 
 make -f build-tools
-make -f build-libs
+make -f build-libs-arm64
 
 python3 -m pip uninstall -y ninja
 python3 -m pip uninstall -y cmake

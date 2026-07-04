@@ -6,5 +6,16 @@ if ! command -v rustup >/dev/null 2>&1; then
   exit 1
 fi
 
+export PKG_CONFIG_PATH="$(pwd)/build_libs/lib/pkgconfig:$(pwd)/build_libs/lib64/pkgconfig"
+
+export OPENSSL_DIR="$(pwd)/build_libs"
+export OPENSSL_LIB_DIR="$(pwd)/build_libs/lib64"
+export OPENSSL_INCLUDE_DIR="$(pwd)/build_libs/include"
+
+export SQLITE3_LIB_DIR="$(pwd)/build_libs/lib"
+export SQLITE3_INCLUDE_DIR="$(pwd)/build_libs/include"
+
+make -f build-libs
+
 cd arti
 ./build-debian.sh
