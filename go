@@ -1,3 +1,3 @@
-./clean
+./clean_all
 ./build
 

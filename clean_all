@@ -1,0 +1,5 @@
+make -f build-tools clean
+make -f build-libs clean
+make -f build-libs-arm64 clean
+
+./clean

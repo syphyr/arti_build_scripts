@@ -1,4 +1,4 @@
-./clean_arm64
+./clean_all
 ./build_arm64
 ./copy_arm64
 

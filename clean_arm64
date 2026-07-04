@@ -1,7 +1,0 @@
-make -f build-tools clean
-make -f build-libs-arm64 clean
-
-cd arti
-git clean -fdx
-git reset --hard
-git describe --tags --always
