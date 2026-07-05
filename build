@@ -20,6 +20,7 @@ export OPENSSL_DIR="$(pwd)/build_libs"
 export OPENSSL_LIB_DIR="$(pwd)/build_libs/lib64"
 export OPENSSL_INCLUDE_DIR="$(pwd)/build_libs/include"
 
+export SQLITE3_DIR="$(pwd)/build_libs"
 export SQLITE3_LIB_DIR="$(pwd)/build_libs/lib"
 export SQLITE3_INCLUDE_DIR="$(pwd)/build_libs/include"
 
