@@ -1,0 +1,52 @@
+From 4c72deef104e6386e06237e48783668086a76514 Mon Sep 17 00:00:00 2001
+From: syphyr <syphyr@gmail.com>
+Date: Mon, 6 Jul 2026 02:54:54 +0200
+Subject: [PATCH] debian: Support flag for static build
+
+---
+ build-debian.sh |  2 +-
+ debian/rules    | 13 ++++++++++++-
+ 2 files changed, 13 insertions(+), 2 deletions(-)
+
+diff --git a/build-debian.sh b/build-debian.sh
+index c1a17bf00..f0cacc234 100755
+--- a/build-debian.sh
++++ b/build-debian.sh
+@@ -1,2 +1,2 @@
+ debian/scripts/debian-update-versions
+-dpkg-buildpackage -uc -us -b -tc -j4 --build-profiles=release,nocheck,full
++dpkg-buildpackage -uc -us -b -tc -j4 --build-profiles=static,release,nocheck,full
+diff --git a/debian/rules b/debian/rules
+index 11b86304a..2fb5baf97 100755
+--- a/debian/rules
++++ b/debian/rules
+@@ -23,6 +23,8 @@ CARGO_TARGET_FLAGS =
+ CARGO_TEST_EXCLUDED = arti-bench arti-config
+ CARGO_TEST_EXCLUDED += tor-events tor-hspow
+ 
++# Pass --features options to the build
++FEATURES :=
+ 
+ # If the build profile contains 'debug', a debug build is triggered
+ # (note: no separate dbgsym package is built in that case)
+@@ -35,7 +37,16 @@ endif
+ 
+ # If the build profile contains 'full', a full build is triggered
+ ifneq ($(filter full,$(DEB_BUILD_PROFILES)),)
+-    CARGO_TARGET_FLAGS += --features full
++    FEATURES += full
++endif
++
++# If the build profile contains 'static", a static linked build is created
++ifneq ($(filter static,$(DEB_BUILD_PROFILES)),)
++    FEATURES += static
++endif
++
++ifneq ($(strip $(FEATURES)),)
++    CARGO_TARGET_FLAGS += --features $(shell echo $(FEATURES) | tr ' ' ',')
+ endif
+ 
+ CARGO_BIN_DIR := $(CARGO_TARGET_DIR)
+-- 
+2.34.1
+

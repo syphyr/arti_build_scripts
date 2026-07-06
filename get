@@ -13,3 +13,10 @@ if [ "$APPLIED" == "" ]; then
 else
 	echo "debian: Auto generate changelog already applied"
 fi
+
+APPLIED=$(git log --oneline --grep="debian: Support flag for static build")
+if [ "$APPLIED" == "" ]; then
+        git am ../patches/0002-debian-Support-flag-for-static-build.patch
+else
+        echo "debian: Support flag for static build already applied"
+fi
