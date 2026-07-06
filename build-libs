@@ -46,11 +46,11 @@ openssl/Makefile: openssl/Configure $(wildcard openssl/Configurations/*.*)
 			no-ec2m no-ssl-trace no-tls-deprecated-ec \
 			no-siv no-tests no-padlockeng no-ui-console \
 			no-apps no-async no-comp no-ktls no-legacy no-zlib \
-			--prefix=/build_libs \
-			--openssldir=/
+			--prefix=$(EXTERNAL_ROOT)/build_libs \
+			--openssldir=$(EXTERNAL_ROOT)/build_libs
 
 openssl-build-stamp: openssl/Makefile
-	PATH=$(PATH) make -j`nproc` -C openssl install_dev DESTDIR=$(EXTERNAL_ROOT)
+	PATH=$(PATH) make -j`nproc` -C openssl install_dev
 	touch $@
 
 openssl-clean:
@@ -71,7 +71,7 @@ sqlite/Makefile:
 		--disable-amalgamation \
 		--disable-load-extension \
 		--disable-tcl \
-		--prefix=/build_libs \
+		--prefix=$(EXTERNAL_ROOT)/build_libs \
 		CFLAGS="-O3 \
 			-flto -fPIC \
 			-DSQLITE_ENABLE_JSON1 \
@@ -81,7 +81,7 @@ sqlite/Makefile:
 		LDFLAGS="-static -flto"
 
 sqlite-build-stamp: sqlite/Makefile
-	PATH=$(PATH) make -j`nproc` -C sqlite install DESTDIR=$(EXTERNAL_ROOT)
+	PATH=$(PATH) make -j`nproc` -C sqlite install
 	touch $@
 
 sqlite-clean:
