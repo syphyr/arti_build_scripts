@@ -1,5 +1,9 @@
 ./get
 
+echo ""
+echo "Updating termux-elf-cleaner"
+echo ""
+
 if [ ! -d termux-elf-cleaner ]; then
    git clone https://github.com/termux/termux-elf-cleaner
 fi
@@ -10,6 +14,10 @@ git fetch
 git rebase
 git log --pretty="%C(yellow)%h %C(green)(%cr) %C(red)(%ar) %C(white)%s %C(blue)(%an)" -10 origin/master
 cd ..
+
+echo ""
+echo "Updating openssl"
+echo ""
 
 if [ ! -d openssl ]; then
    git clone https://github.com/openssl/openssl.git
@@ -22,6 +30,10 @@ git rebase
 git submodule update --init --recursive
 git log --pretty="%C(yellow)%h %C(green)(%cr) %C(red)(%ar) %C(white)%s %C(blue)(%an)" -10 origin/openssl-3.5
 cd ..
+
+echo ""
+echo "Updating sqlite"
+echo ""
 
 if [ ! -d sqlite ]; then
    git clone https://github.com/sqlite/sqlite
