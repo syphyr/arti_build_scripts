@@ -47,6 +47,7 @@ openssl/Makefile: openssl/Configure $(wildcard openssl/Configurations/*.*)
 			no-siv no-tests no-padlockeng no-ui-console \
 			no-apps no-async no-comp no-ktls no-legacy no-zlib \
 			--prefix=$(EXTERNAL_ROOT)/build_libs \
+			--libdir=$(EXTERNAL_ROOT)/build_libs/lib \
 			--openssldir=$(EXTERNAL_ROOT)/build_libs
 
 openssl-build-stamp: openssl/Makefile
