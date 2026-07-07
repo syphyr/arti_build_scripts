@@ -1,3 +1,5 @@
+#!/bin/bash
+
 sudo update-alternatives --set gcc /usr/bin/gcc-8
 sudo update-alternatives --set g++ /usr/bin/g++-8
 sudo update-alternatives --set cpp /usr/bin/cpp-8
@@ -12,6 +14,41 @@ if ! command -v rustup >/dev/null 2>&1; then
   echo "To install rust if needed:"
   echo "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh"
   exit 1
+fi
+
+CHECK_OUTPUT=$(rustup check)
+RUSTC_VER_AVAIL=$(echo "$CHECK_OUTPUT" | grep "stable-x86_64" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
+RUSTUP_VER_AVAIL=$(echo "$CHECK_OUTPUT" | grep "rustup" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
+
+RUSTC_VER_CURRENT=$(rustc --version | awk '{print $2}')
+RUSTUP_VER_CURRENT=$(rustup --version 2>&1 | awk '/^rustup/ {print $2}')
+
+if [ -z "$RUSTC_VER_AVAIL" ]; then
+    echo "Could not check for updates"
+    exit 1
+fi
+
+if [ "$RUSTC_VER_AVAIL" != "$RUSTC_VER_CURRENT" ] || [ "$RUSTUP_VER_AVAIL" != "$RUSTUP_VER_CURRENT" ]; then
+    echo "Rust updates available"
+    echo ""
+    echo "rustc:  $RUSTC_VER_CURRENT -> $RUSTC_VER_AVAIL"
+    echo "rustup: $RUSTUP_VER_CURRENT -> $RUSTUP_VER_AVAIL"
+
+    read -p "Would you like to update now? [y/N] " response
+    case "$response" in
+        [yY]*)
+            echo "Updating rust"
+            echo ""
+            rustup update
+            ;;
+        *)
+            echo "Skipping update"
+            echo ""
+            ;;
+    esac
+else
+    echo "rustup/rustc are up to date"
+    echo ""
 fi
 
 export PKG_CONFIG_PATH="$(pwd)/build_libs/lib/pkgconfig"
