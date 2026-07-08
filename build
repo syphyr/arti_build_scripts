@@ -13,6 +13,7 @@ if ! command -v rustup >/dev/null 2>&1; then
   echo ""
   echo "To install rust if needed:"
   echo "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh"
+  echo ""
   exit 1
 fi
 
@@ -25,6 +26,7 @@ RUSTUP_VER_CURRENT=$(rustup --version 2>&1 | awk '/^rustup/ {print $2}')
 
 if [ -z "$RUSTC_VER_AVAIL" ]; then
     echo "Could not check for updates"
+    echo ""
     exit 1
 fi
 
@@ -33,7 +35,7 @@ if [ "$RUSTC_VER_AVAIL" != "$RUSTC_VER_CURRENT" ] || [ "$RUSTUP_VER_AVAIL" != "$
     echo ""
     echo "rustc:  $RUSTC_VER_CURRENT -> $RUSTC_VER_AVAIL"
     echo "rustup: $RUSTUP_VER_CURRENT -> $RUSTUP_VER_AVAIL"
-
+    echo ""
     read -p "Would you like to update now? [y/N] " response
     case "$response" in
         [yY]*)
@@ -61,7 +63,13 @@ export SQLITE3_DIR="$(pwd)/build_libs"
 export SQLITE3_LIB_DIR="$(pwd)/build_libs/lib"
 export SQLITE3_INCLUDE_DIR="$(pwd)/build_libs/include"
 
+echo "Building static libraries"
+echo ""
+
 make -f build-libs
+
+echo "Building static Arti debian package"
+echo ""
 
 cd arti
 ./build-debian.sh
