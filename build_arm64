@@ -51,9 +51,12 @@ else
     echo ""
 fi
 
-echo ""
-echo "Adding android native arm64 target for rust"
-rustup target add aarch64-linux-android
+if ! rustup target list | grep -q "aarch64-linux-android (installed)"; then
+    echo "Adding android native arm64 target for rust"
+    rustup target add aarch64-linux-android
+else
+    echo "Android arm64 target is already installed"
+fi
 
 echo ""
 echo "Installing/updating cargo-ndk"
