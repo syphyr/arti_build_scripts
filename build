@@ -4,9 +4,11 @@ sudo update-alternatives --set gcc /usr/bin/gcc-8
 sudo update-alternatives --set g++ /usr/bin/g++-8
 sudo update-alternatives --set cpp /usr/bin/cpp-8
 
-gcc --version
-g++ --version
-cpp --version
+echo ""
+gcc --version | grep gcc
+g++ --version | grep g++
+cpp --version | grep cpp
+echo ""
 
 if ! command -v rustup >/dev/null 2>&1; then
   echo "Error: rustup is not installed. Please install before running this script."
@@ -18,13 +20,13 @@ if ! command -v rustup >/dev/null 2>&1; then
 fi
 
 CHECK_OUTPUT=$(rustup check)
-RUSTC_VER_AVAIL=$(echo "$CHECK_OUTPUT" | grep "stable-x86_64" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
-RUSTUP_VER_AVAIL=$(echo "$CHECK_OUTPUT" | grep "rustup" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
+RUSTC_VER_AVAIL=$(echo "$CHECK_OUTPUT" | grep "stable-x86_64" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' || echo "")
+RUSTUP_VER_AVAIL=$(echo "$CHECK_OUTPUT" | grep "rustup" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' || echo "")
 
 RUSTC_VER_CURRENT=$(rustc --version | awk '{print $2}')
 RUSTUP_VER_CURRENT=$(rustup --version 2>&1 | awk '/^rustup/ {print $2}')
 
-if [ -z "$RUSTC_VER_AVAIL" ]; then
+if [ -z "$RUSTUP_VER_AVAIL" ]; then
     echo "Could not check for updates"
     echo ""
     exit 1
@@ -68,6 +70,7 @@ echo ""
 
 make -f build-libs
 
+echo ""
 echo "Building static Arti debian package"
 echo ""
 
