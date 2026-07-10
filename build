@@ -20,13 +20,29 @@ if ! command -v rustup >/dev/null 2>&1; then
 fi
 
 CHECK_OUTPUT=$(rustup check)
-RUSTC_VER_AVAIL=$(echo "$CHECK_OUTPUT" | grep "stable-x86_64" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' || echo "")
-RUSTUP_VER_AVAIL=$(echo "$CHECK_OUTPUT" | grep "rustup" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' || echo "")
+
+get_version() {
+    local search_term="$1"
+    local line=$(echo "$CHECK_OUTPUT" | grep "$search_term")
+
+    [ -z "$line" ] && return
+
+    if echo "$line" | grep -q "update available"; then
+        # Case: 1.96.1 (...) -> 1.97.0 (...)
+        echo "$line" | awk -F ' -> ' '{print $2}' | awk '{print $1}'
+    elif echo "$line" | grep -q "up to date"; then
+        # Case: up to date : 1.97.0 (...)
+        echo "$line" | awk -F ':' '{print $NF}' | awk '{print $1}'
+    fi
+}
+
+RUSTC_VER_AVAIL=$(get_version "stable-x86_64")
+RUSTUP_VER_AVAIL=$(get_version "rustup")
 
 RUSTC_VER_CURRENT=$(rustc --version | awk '{print $2}')
 RUSTUP_VER_CURRENT=$(rustup --version 2>&1 | awk '/^rustup/ {print $2}')
 
-if [ -z "$RUSTUP_VER_AVAIL" ]; then
+if [ -z "$RUSTC_VER_AVAIL" ] && [ -z "$RUSTUP_VER_AVAIL" ]; then
     echo "Could not check for updates"
     echo ""
     exit 1
