@@ -11,3 +11,5 @@ cp -av arti/crates/arti/src/arti-example-config.toml arm64/arti.toml
 sed -ri 's/^#state_dir.+/state_dir = "\~\/arti\/data"/' arm64/arti.toml
 sed -ri 's/^#cache_dir.+/cache_dir = "\~\/arti\/cache"/' arm64/arti.toml
 sed -ri 's/^#socks_listen.+/socks_listen = 9050/' arm64/arti.toml
+
+patch -p0 < arti.toml.diff

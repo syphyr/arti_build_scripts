@@ -1,0 +1,34 @@
+--- arm64/arti.toml.orig	2026-07-10 04:49:19.573448581 +0200
++++ arm64/arti.toml	2026-07-14 03:43:57.647665611 +0200
+@@ -322,7 +322,7 @@
+ #     If set to false, we will ignore the configured bridges.
+ #     If set to "auto", we will use any bridges that are configured.
+ #     If set to true, bridges must be configured and will be used.
+-#enabled = "auto"
++enabled = "false"
+ 
+ # What bridges (including pluggable transports) to use, in this syntax:
+ #  bridges = [
+@@ -348,14 +348,22 @@
+ #
+ #bridges = []
+ 
++bridges = [
++    "obfs4 213.199.35.150:443 503868C118AB3582C643D6D0DEC0044254DAE0AC cert=9Q2/xn52TQTL+mDNP3FtYHuf5svq5TA/BAyeOZJ4R8hlDdEs28I5VCVS2sEoSnNw0NGEKg iat-mode=0",
++    "obfs4 138.124.37.23:7001 9DCCBF9F7926E23931A8A727221C5CDB5A2C2978 cert=L3MQV2V/ToM5yANi6glmAHOWAwtLKGJsG3EOpNgMXfVd8rD6mRU1KkfPw6MgXKeA3j2maQ iat-mode=0",
++]
++
+ # An example managed pluggable transport binary.
+ #    [[bridges.transports]]
++[[bridges.transports]]
+ 
+ # Which pluggable transports does this binary provide?
+ #    protocols = ["obfs4", "obfs5"]
++protocols = ["obfs4", "webtunnel"]
+ 
+ # Path to the binary to be run.
+ #    path = "/usr/bin/obfsproxy"
++path = "~/bin/lyrebird"
+ 
+ # Any command-line arguments to pass to the binary (empty if not specified).
+ #    arguments = ["-obfs4", "-obfs5"]
