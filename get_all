@@ -9,7 +9,6 @@ if [ ! -d termux-elf-cleaner ]; then
 fi
 
 cd termux-elf-cleaner
-git checkout master
 git fetch
 git rebase
 git log --pretty="%C(yellow)%h %C(green)(%cr) %C(red)(%ar) %C(white)%s %C(blue)(%an)" -10 origin/master
@@ -24,7 +23,6 @@ if [ ! -d openssl ]; then
 fi
 
 cd openssl
-git checkout openssl-3.5
 git fetch
 git rebase
 git submodule update --init --recursive
@@ -40,7 +38,6 @@ if [ ! -d sqlite ]; then
 fi
 
 cd sqlite
-git checkout master
 git fetch
 git rebase
 git log --pretty="%C(yellow)%h %C(green)(%cr) %C(red)(%ar) %C(white)%s %C(blue)(%an)" -10 origin/master
